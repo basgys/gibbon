@@ -25,17 +25,17 @@ module Gibbon
     end
 
     def call(method, params = {})
-      url = base_api_url + method
-      params = escape_params(@default_params.merge(params))
-      response = API.post(url, :body => params.to_json, :timeout => @timeout)
+        url = base_api_url + method
+        params = @default_params.merge(params)
+        response = Gibbon::API.post(url, :body => CGI::escape(params.to_json), :timeout => @timeout)
 
-      begin
-        response = JSON.parse(response.body)
-      rescue
-        response = response.body
+        begin
+          response = ActiveSupport::JSON.decode(response.body)
+        rescue
+          response = response.body
+        end
+        response
       end
-      response
-    end
 
     def method_missing(method, *args)
       method = method.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase } #Thanks for the gsub, Rails
