@@ -30,7 +30,7 @@ module Gibbon
         response = Gibbon::API.post(url, :body => CGI::escape(params.to_json), :timeout => @timeout)
 
         begin
-          response = ActiveSupport::JSON.decode(response.body)
+          response = ActiveSupport::JSON.decode(response.body).symbolize_keys
         rescue
           response = response.body
         end
